@@ -32,7 +32,8 @@
     </div>
   </div>
   <script>
-    var socket = io();
+    var url = window.location.origin
+    var socket = io.connect(window.location.origin);
     $(() => {
       $("#send").click(() => {
         sendMessage({ name: $("#name").val(), message: $("#message").val() });
@@ -48,13 +49,13 @@
     }
 
     function getMessages() {
-      $.get('http://localhost:3000/messages', (data) => {
+      $.get(`${url}/messages`, (data) => {
         data.forEach(addMessages);
       })
     }
 
     function sendMessage(message) {
-      $.post('http://localhost:3000/messages', message)
+      $.post(`${url}/messages`, message)
     }
   </script>
 </body>

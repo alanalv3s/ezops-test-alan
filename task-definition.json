@@ -1,0 +1,34 @@
+{
+  "executionRoleArn": "arn:aws:iam::017098150414:role/AmazonECSTaskRole",
+  "containerDefinitions": [
+    {
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/chat-app",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 3000,
+          "protocol": "tcp",
+          "containerPort": 3000
+        }
+      ],
+      "cpu": 256,
+      "image": "017098150414.dkr.ecr.us-east-1.amazonaws.com/chat-app:latest",
+      "essential": true,
+      "name": "chat-app"
+    }
+  ],
+  "memory": "512",
+  "taskRoleArn": "arn:aws:iam::017098150414:role/AmazonECSTaskRole",
+  "family": "chat-app",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "networkMode": "awsvpc",
+  "cpu": "256"
+}
