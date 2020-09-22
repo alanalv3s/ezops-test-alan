@@ -42,7 +42,7 @@ jobs:
     - name: Configure AWS Credentials
       id: aws-login
       run: | 
-        sudo apt install curl jq python3 py-pip
+        sudo apt -y install curl jq python3 python3-pip
         sudo pip install awscli
         sudo docker info
         aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
