@@ -26,6 +26,7 @@
       <textarea id="message" class="form-control" placeholder="Your Message Here"></textarea>
       <br>
       <button id="send" class="btn btn-success">Send</button>
+      <button id="clear" class="btn btn-danger">Clear</button>
     </div>
     <div id="messages">
 
@@ -33,7 +34,8 @@
   </div>
   <script>
     var url = window.location.origin
-    var socket = io.connect(window.location.origin);
+    var socket = io(url);
+
     $(() => {
       $("#send").click(() => {
         sendMessage({ name: $("#name").val(), message: $("#message").val() });
@@ -42,10 +44,23 @@
       getMessages()
     })
 
+    $(() => {
+      $("#clear").click(() => {
+        const confirmation = confirm('Are you sure to clear all messages?')
+        if (!confirmation) {
+          event.preventDefault()
+        }
+        deleteMessages()
+        location.reload()
+      })
+    })
+
     socket.on('message', addMessages)
 
     function addMessages(message) {
-      $("#messages").append(`<h4> ${message.name} </h4> <p> ${message.message} </p>`)
+      if (message.name && message.message) {
+        $("#messages").append(`<strong> ${message.name}: </strong> ${message.message} <br>`)
+      }
     }
 
     function getMessages() {
@@ -55,7 +70,16 @@
     }
 
     function sendMessage(message) {
-      $.post(`${url}/messages`, message)
+      if (message.name && message.message) {
+        $.post(`${url}/messages`, message)
+      }
+      else {
+        window.alert('Please type your name/message')
+      }
+    }
+
+    function deleteMessages() {
+      $.post(`${url}/messages/clear`)
     }
   </script>
 </body>

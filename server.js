@@ -22,14 +22,12 @@ app.get('/messages', (req, res) => {
   })
 })
 
-
 app.get('/messages/:user', (req, res) => {
   var user = req.params.user
   Message.find({ name: user }, (err, messages) => {
     res.send(messages);
   })
 })
-
 
 app.post('/messages', async (req, res) => {
   try {
@@ -52,12 +50,16 @@ app.post('/messages', async (req, res) => {
   finally {
     console.log('Message Posted')
   }
-
 })
 
+app.post('/messages/clear', (req, res) => {
+  Message.deleteMany({}, (err, messages) => {
+    res.send(messages)
+  })
+})
 
 io.on('connection', () => {
-  console.log('a user is connected')
+  console.log(`a user is connected`)
 })
 
 mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
