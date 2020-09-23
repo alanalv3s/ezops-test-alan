@@ -15,15 +15,21 @@
   <script src="/socket.io/socket.io.js"></script>
 </head>
 
+<style>
+  button {
+    cursor: pointer;
+  }
+</style>
+
 <body>
   <div class="container">
     <br>
     <div class="jumbotron">
-      <h1 class="display-4">Send Message</h1>
+      <h1 class="display-4">Send Messages Ezops Teste</h1>
       <br>
-      <input id="name" class="form-control" placeholder="Name">
+      <input id="name" class="form-control" placeholder="Name" autofocus>
       <br>
-      <textarea id="message" class="form-control" placeholder="Your Message Here"></textarea>
+      <input id="message" class="form-control" placeholder="Your Message Here"></input>
       <br>
       <button id="send" class="btn btn-success">Send</button>
       <button id="clear" class="btn btn-danger">Clear</button>
@@ -39,6 +45,18 @@
     $(() => {
       $("#send").click(() => {
         sendMessage({ name: $("#name").val(), message: $("#message").val() });
+
+        $("#message").val('')
+        $("#message").focus()
+      })
+
+      $("#message").keypress((event) => {
+        if (event.key === "Enter") {
+          sendMessage({ name: $("#name").val(), message: $("#message").val() });
+
+          $("#message").val('')
+          $("#message").focus()
+        }
       })
 
       getMessages()
