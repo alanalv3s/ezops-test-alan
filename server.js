@@ -1,20 +1,37 @@
-var express = require('express');
-var bodyParser = require('body-parser')
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var mongoose = require('mongoose');
+require('dotenv/config');
+const express = require('express');
+const bodyParser = require('body-parser')
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const mongoose = require('mongoose');
 
 app.use(express.static(__dirname));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
 
-var Message = mongoose.model('Message', {
+const Message = mongoose.model('Message', {
   name: String,
   message: String
 })
 
-var dbUrl = 'mongodb+srv://alanalv3s:M2kuLQ8B7CPmJ0Lc@cluster0.2a8rf.mongodb.net/chat-app?retryWrites=true&w=majority'
+const {
+  MONGO_USERNAME,
+  MONGO_PASSWORD,
+  MONGO_HOSTNAME,
+  MONGO_PORT,
+  MONGO_DB
+} = process.env;
+
+const dbUrl = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authSource=admin`;
+
+const options = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  reconnectTries: Number.MAX_VALUE,
+  reconnectInterval: 500,
+  connectTimeoutMS: 10000,
+};
 
 app.get('/messages', (req, res) => {
   Message.find({}, (err, messages) => {
@@ -23,7 +40,7 @@ app.get('/messages', (req, res) => {
 })
 
 app.get('/messages/:user', (req, res) => {
-  var user = req.params.user
+  const user = req.params.user
   Message.find({ name: user }, (err, messages) => {
     res.send(messages);
   })
@@ -31,12 +48,12 @@ app.get('/messages/:user', (req, res) => {
 
 app.post('/messages', async (req, res) => {
   try {
-    var message = new Message(req.body);
+    const message = new Message(req.body);
 
-    var savedMessage = await message.save()
+    const savedMessage = await message.save()
     console.log('saved');
 
-    var censored = await Message.findOne({ message: 'badword' });
+    const censored = await Message.findOne({ message: 'badword' });
     if (censored)
       await Message.remove({ _id: censored.id })
     else
@@ -62,10 +79,14 @@ io.on('connection', () => {
   console.log(`a user is connected`)
 })
 
-mongoose.connect(dbUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err) => {
-  console.log('mongodb connected', err);
+mongoose.connect(dbUrl, options, (err) => {
+  console.log('MongoDB is connected')
+
+  if (err) {
+    throw new Error(err)
+  }
 })
 
-var server = http.listen(3000, () => {
-  console.log('server is running on port', server.address().port);
+const server = http.listen(3000, () => {
+  console.log('Server is running on port', server.address().port);
 });
