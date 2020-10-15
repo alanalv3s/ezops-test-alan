@@ -66,10 +66,11 @@
       $("#clear").click(() => {
         const confirmation = confirm('Are you sure to clear all messages?')
         if (!confirmation) {
-          event.preventDefault()
+          return false
+        } else {
+          deleteMessages()
+          location.reload()
         }
-        deleteMessages()
-        location.reload()
       })
     })
 
